@@ -1,5 +1,7 @@
 package com.lm.hadoop.Service;
 
+import com.lm.hadoop.Vo.Result;
+
 public interface HadoopService {
-    void get();
+    Result get(String openId);
 }

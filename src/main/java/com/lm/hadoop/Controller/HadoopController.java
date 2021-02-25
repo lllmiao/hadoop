@@ -1,6 +1,7 @@
 package com.lm.hadoop.Controller;
 
 import com.lm.hadoop.Service.HadoopServiceImpl;
+import com.lm.hadoop.Vo.Result;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,29 +35,10 @@ import java.sql.SQLException;
 public class HadoopController {
     @Autowired
     HadoopServiceImpl hadoopService;
+
+    @Autowired
     JdbcTemplate jdbcTemplate;
-    //创建 Spring 的 IOC 容器
-    //ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-    public void getConnection() throws IOException, ClassNotFoundException, SQLException, IllegalAccessException, InstantiationException {
-        String driverClass = null;
-        String jdbcUrl = null;
-        String user = null;
-        String password = null;
-// 读取类路径下的jdbc.propertites 文件
-        InputStream in = getClass().getClassLoader().getResourceAsStream("application.properties");
-        Properties properties = new Properties();
-        properties.load(in);
-        driverClass = properties.getProperty("spring.datasource.driver-class-name");
-        jdbcUrl = properties.getProperty("spring.datasource.url");
-        user = properties.getProperty("spring.datasource.username");
-        password = properties.getProperty("spring.datasource.password");
-        Driver driver = (Driver) Class.forName(driverClass).newInstance();
-        Properties info = new Properties();
-        info.put("user", user);
-        info.put("password", password);
-        Connection connection = driver.connect(jdbcUrl, info);
-        System.out.println(connection + "成功");
-    }
+
 
     //提供hadoop中的配置信息
     static Configuration conf = new Configuration();
@@ -187,4 +170,9 @@ public class HadoopController {
         put.write(bytes);
     }
      */
+
+    @PostMapping("/addUser.do")
+    public Result addUser(@RequestParam(name = "openid") String openId) throws Exception{
+        return hadoopService.get(openId);
+    }
 }

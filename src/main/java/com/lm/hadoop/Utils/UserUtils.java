@@ -1,17 +1,16 @@
 package com.lm.hadoop.Utils;
 
-import com.lm.hadoop.Vo.NetDiskVO;
+import com.lm.hadoop.Vo.NetDiskUser;
 
-import java.util.UUID;
-
+//工具类
 public class UserUtils {
 
-    public static NetDiskVO createNetDisk(String userId) {
-        NetDiskVO netDiskVO = new NetDiskVO();
-        netDiskVO.setId(UUID.randomUUID().toString().replace("-", ""));
+    public static NetDiskUser createNetDisk(String userId) {
+        NetDiskUser netDiskVO = new NetDiskUser();
         netDiskVO.setUserId(userId);
-        netDiskVO.setSpace(10240D);
-
+        netDiskVO.setAllSpace(5120.00);
+        netDiskVO.setUsedSpace(0.00);
+        netDiskVO.setFreeSpace(5120.00);
         return netDiskVO;
     }
 }

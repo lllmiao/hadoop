@@ -1,34 +1,19 @@
 package com.lm.hadoop.Controller;
 
 import com.lm.hadoop.Service.HadoopServiceImpl;
-import com.lm.hadoop.Vo.Result;
-import net.sf.json.JSONException;
+import com.lm.hadoop.Vo.NetDiskUserResult;
+import com.lm.hadoop.Vo.UploadImageResult;
 import net.sf.json.JSONObject;
-import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Driver;
-import java.util.Properties;
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.servlet.http.HttpSession;
 
+// 控制层: 接收前端传过来的数据
 @RestController
 //默认返回JSON格式
 @ResponseBody
@@ -39,30 +24,94 @@ public class HadoopController {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-
-    //提供hadoop中的配置信息
-    static Configuration conf = new Configuration();
-    //根据conf获取具体的文件系统对象
-    static FileSystem fs;
-
-    //DataSource dataSource;
-    //设置用户总分配内存空间
-    //static int max = 10;
-
-
-    //创建用户库,produces需补上不然前端获取数据乱码
-    @PostMapping(value = "/mkdir", produces = "text/html;charset=UTF-8")
-    public String mkdirDirectory(@RequestBody String data) throws JSONException {
-
-        System.out.println("------创建用户库中------");
-
+    //授权时创建用户个人文件夹
+    @PostMapping("/addUser")
+    public NetDiskUserResult addUser(@RequestBody String data) throws Exception{
         //获取客户端传送数据
         JSONObject jsonObject = JSONObject.fromObject(data);
-        String userId = jsonObject.getString("openid"); //解析前端传来的json数据并获取值的的基本语句，得到后就可以直接使用了
-        if (jsonObject == null || userId.equals("")) {
-            return "{\"flag\":\"false\"}";
-        }
-        return "ss";
+        String userId = jsonObject.getString("openid"); //解析前端传来的json数据并获取值
+        return hadoopService.get(userId);
+    }
+
+    //将图片上传到hdfs
+    @PostMapping("/uploadImage")
+    public UploadImageResult uploadImage(@RequestParam("imageName") MultipartFile[] files, HttpServletRequest request) throws Exception{
+        //获取客户端传送数据
+//        JSONObject jsonObject = JSONObject.fromObject(files);
+//        String imagePath = jsonObject.getString("ImagePath"); //解析前端传来的json数据并获取值
+        return hadoopService.image(files,request);
+    }
+
+    //将图片上传到hdfs
+//    @PostMapping("/uploadImage")
+//    public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//
+//        System.out.println("------图片上传------");
+//
+//        MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+//        MultipartFile file = req.getFile("imageName");
+//
+//        fs = FileSystem.get(conf);
+//        //规定路径
+//        Path dst = new Path("hdfs://localhost:9000/" + file.getOriginalFilename());
+//        //打开新文件写
+//        FSDataOutputStream os = fs.create(dst);
+//        IOUtils.copy(file.getInputStream(),os);
+//        fs.close();
+//    }
+
+    //创建文件夹
+//    @PostMapping("/create")
+//    public static void create() throws IOException, URISyntaxException, InterruptedException {
+//
+//        System.out.println("------创建文件夹------");
+//
+//        fs = FileSystem.get(new URI("hdfs://localhost:9000"), conf, "hadoop1"); //获取文件系统
+//        Path path = new Path("/cjy");
+//        fs.mkdirs(path);
+//
+//    }
+    //将文件上传到hdfs
+//    @PostMapping("/uploadFile")
+//    public void uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//
+//        System.out.println("------文件上传------");
+//        //HttpServletRequest转型为MultipartHttpServletRequest，就能非常方便地得到文件名和文件内容
+//        MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+//        //获取文件
+//        MultipartFile file = req.getFile("filename");
+//
+//        fs = FileSystem.get(conf);
+//        //getOriginalFilename 获取文件名
+//        Path dst = new Path("hdfs://localhost:9000/" + file.getOriginalFilename());
+//        FSDataOutputStream os = fs.create(dst);
+//        IOUtils.copy(file.getInputStream(),os);
+//        fs.close();
+//    }
+
+
+    //将hdfs上的文件下载
+//    @PostMapping("/download")
+//    public  void download() throws IOException {
+//        fs = FileSystem.get(conf);
+//        fs.copyToLocalFile(false, new Path("/t1.txt"), new Path("F:/hdfs下载的文件"), true);
+//        fs.close();
+//    }
+    //创建用户库,produces需补上不然前端获取数据乱码
+//    @PostMapping(value = "/mkdirDirectory", produces = "text/html;charset=UTF-8")
+//    public String mkdirDirectory(@RequestBody String data) throws JSONException {
+//        System.out.println("------创建用户库中------");
+//        //获取客户端传送数据
+//        JSONObject jsonObject = JSONObject.fromObject(data);
+//        String userId = jsonObject.getString("openid"); //解析前端传来的json数据并获取值
+//        if (jsonObject == null || userId.equals("")) {
+//            return "{\"flag\":\"false\"}";
+//        }
+////        HadoopServiceImpl hadoopService = new HadoopServiceImpl();
+////        Result result = hadoopService.get(userId);
+//        //hadoopService.get(userId);
+//        //return result.getDesc();
+//        return "dui ";
 
 //        if (null == jdbcTemplate) {
 //            //从 IOC 容器中获取 bean 的实例
@@ -85,62 +134,7 @@ public class HadoopController {
 //            System.out.println("------用户库创建完成------");
 //            return "------spring：用户库创建成功------";
 //        }
-    }
-    //将文件上传到hdfs
-    @PostMapping("/uploadFile")
-    public void uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        System.out.println("------文件上传------");
-        //HttpServletRequest转型为MultipartHttpServletRequest，就能非常方便地得到文件名和文件内容
-        MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
-        //获取文件
-        MultipartFile file = req.getFile("filename");
-
-        fs = FileSystem.get(conf);
-        //getOriginalFilename 获取文件名
-        Path dst = new Path("hdfs://localhost:9000/" + file.getOriginalFilename());
-        FSDataOutputStream os = fs.create(dst);
-        IOUtils.copy(file.getInputStream(),os);
-        fs.close();
-    }
-    //将图片上传到hdfs
-    @PostMapping("/uploadImage")
-    public void uploadImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        System.out.println("------图片上传------");
-
-        MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
-        MultipartFile file = req.getFile("imageName");
-
-        fs = FileSystem.get(conf);
-        //规定路径
-        Path dst = new Path("hdfs://localhost:9000/" + file.getOriginalFilename());
-        //打开新文件写
-        FSDataOutputStream os = fs.create(dst);
-        IOUtils.copy(file.getInputStream(),os);
-        fs.close();
-    }
-
-    //将hdfs上的文件下载
-    @PostMapping("/download")
-    public  void download() throws IOException {
-        fs = FileSystem.get(conf);
-        fs.copyToLocalFile(false, new Path("/t1.txt"), new Path("F:/hdfs下载的文件"), true);
-        fs.close();
-    }
-
-    //创建文件夹
-    //@PostMapping("/create")
-   /*  public static void create() throws IOException, URISyntaxException, InterruptedException {
-
-        System.out.println("------创建文件夹------");
-
-        fs = FileSystem.get(new URI("hdfs://localhost:9000"), conf, "hadoop1"); //获取文件系统
-        Path path = new Path("/cjy");
-        fs.mkdirs(path);
-
-    }
-    */
     //查看hdfs内的文件
     // @PostMapping("/list")
     /*public static void Getlist() throws IOException {
@@ -171,8 +165,5 @@ public class HadoopController {
     }
      */
 
-    @PostMapping("/addUser.do")
-    public Result addUser(@RequestParam(name = "openid") String openId) throws Exception{
-        return hadoopService.get(openId);
-    }
+
 }

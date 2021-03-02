@@ -28,7 +28,7 @@ public class NetDiskUserResult {
     }
     public NetDiskUserResult() {
     }
-    public NetDiskUserResult(Double allSpace, Double usedSpace, Double freeSpace) {
+    public NetDiskUserResult(Double allSpace, Double freeSpace, Double usedSpace) {
         this.allSpace = allSpace;
         this.usedSpace = usedSpace;
         this.freeSpace = freeSpace;

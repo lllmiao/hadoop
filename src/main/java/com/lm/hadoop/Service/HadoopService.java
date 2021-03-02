@@ -11,5 +11,5 @@ import java.net.URISyntaxException;
 // 业务层接口: 处理控制层传过来的数据
 public interface HadoopService {
     NetDiskUserResult get(String openId) throws URISyntaxException, IOException;
-    UploadImageResult image(MultipartFile[] imagePath, HttpServletRequest request) throws URISyntaxException, IOException;
+    UploadImageResult image(MultipartFile[] imagePath, HttpServletRequest request) throws Exception;
 }

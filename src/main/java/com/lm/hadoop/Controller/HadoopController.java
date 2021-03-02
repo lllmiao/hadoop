@@ -26,7 +26,7 @@ public class HadoopController {
 
     //授权时创建用户个人文件夹
     @PostMapping("/addUser")
-    public NetDiskUserResult addUser(@RequestBody String data) throws Exception{
+    public NetDiskUserResult addUser(@RequestBody String data) throws Exception {
         //获取客户端传送数据
         JSONObject jsonObject = JSONObject.fromObject(data);
         String userId = jsonObject.getString("openid"); //解析前端传来的json数据并获取值
@@ -35,12 +35,17 @@ public class HadoopController {
 
     //将图片上传到hdfs
     @PostMapping("/uploadImage")
-    public UploadImageResult uploadImage(@RequestParam("imageName") MultipartFile[] files, HttpServletRequest request) throws Exception{
+    public UploadImageResult uploadImage(@RequestParam("imageName") MultipartFile[] files, HttpServletRequest request) throws Exception {
         //获取客户端传送数据
 //        JSONObject jsonObject = JSONObject.fromObject(files);
 //        String imagePath = jsonObject.getString("ImagePath"); //解析前端传来的json数据并获取值
-        return hadoopService.image(files,request);
+        return hadoopService.image(files, request);
     }
+
+//    @PostMapping("/download")
+//    public void downloadResult(@RequestParam("imageName")MultipartFile[] files, HttpServletRequest request) throws Exception {
+//        return hadoopService.image(files, request);
+//    }
 
     //将图片上传到hdfs
 //    @PostMapping("/uploadImage")
@@ -88,7 +93,6 @@ public class HadoopController {
 //        IOUtils.copy(file.getInputStream(),os);
 //        fs.close();
 //    }
-
 
     //将hdfs上的文件下载
 //    @PostMapping("/download")
